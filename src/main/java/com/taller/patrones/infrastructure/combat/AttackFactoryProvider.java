@@ -14,6 +14,7 @@ public class AttackFactoryProvider {
         factories.put("ICE_BEAM", new IceBeamFactory());
         factories.put("THUNDER", new ThunderFactory());
         factories.put("POISON_STING", new PoisonStingFactory());
+        factories.put("METEORO", new MeteoroFactory());
     }
 
     public static AttackFactory getFactory(String name) {
