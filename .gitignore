@@ -1,0 +1,15 @@
+# Ignorar carpetas pesadas (como las de dependencias)
+node_modules/
+vendor/
+
+# Ignorar archivos de configuración con claves secretas
+.env
+config/secrets.yml
+
+# Ignorar archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar logs o archivos temporales
+*.log
+temp/
