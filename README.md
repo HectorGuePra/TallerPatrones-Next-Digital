@@ -34,6 +34,7 @@ src/main/java/com/taller/patrones/
 - ¿Qué problema te encuentras al añadir "Meteoro"?
 - ¿Qué pasa si mañana piden 10 ataques más?
 - ¿Qué patrón permitiría añadir ataques **sin modificar** `CombatEngine`?
+Patron recomendable seria Factory Method
 
 **Pista:** Busca en `infrastructure/combat/CombatEngine.java`
 

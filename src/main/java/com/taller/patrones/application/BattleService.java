@@ -3,6 +3,8 @@ package com.taller.patrones.application;
 import com.taller.patrones.domain.Attack;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.infrastructure.combat.AttackFactory;
+import com.taller.patrones.infrastructure.combat.AttackFactoryProvider;
 import com.taller.patrones.infrastructure.combat.CombatEngine;
 import com.taller.patrones.infrastructure.persistence.BattleRepository;
 
@@ -49,7 +51,9 @@ public class BattleService {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || !battle.isPlayerTurn()) return;
 
-        Attack attack = combatEngine.createAttack(attackName);
+        AttackFactory factory= AttackFactoryProvider.getFactory(attackName);
+        Attack attack = combatEngine.createAttack(factory);
+
         int damage = combatEngine.calculateDamage(battle.getPlayer(), battle.getEnemy(), attack);
         applyDamage(battle, battle.getPlayer(), battle.getEnemy(), damage, attack);
     }
@@ -58,7 +62,9 @@ public class BattleService {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || battle.isPlayerTurn()) return;
 
-        Attack attack = combatEngine.createAttack(attackName != null ? attackName : "TACKLE");
+        AttackFactory factory= AttackFactoryProvider.getFactory(attackName != null ? attackName : "GOLPE");
+        Attack attack = combatEngine.createAttack(factory);
+
         int damage = combatEngine.calculateDamage(battle.getEnemy(), battle.getPlayer(), attack);
         applyDamage(battle, battle.getEnemy(), battle.getPlayer(), damage, attack);
     }
