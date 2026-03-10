@@ -34,7 +34,7 @@ src/main/java/com/taller/patrones/
 - ¿Qué problema te encuentras al añadir "Meteoro"?
 - ¿Qué pasa si mañana piden 10 ataques más?
 - ¿Qué patrón permitiría añadir ataques **sin modificar** `CombatEngine`?
-Patron recomendable seria Factory Method
+Patron recomendable seria Factory Method pues cada ataque seria una factoria
 
 **Pista:** Busca en `infrastructure/combat/CombatEngine.java`
 
@@ -48,7 +48,9 @@ Además, te piden un nuevo tipo: "CRÍTICO", con fórmula `daño * 1.5` y 20% de
 
 **Preguntas:**
 - ¿Qué principio SOLID se viola al añadir otro `case` en el switch?
+Se viola el de abierto a expansion y cerrado a modificacion
 - ¿Qué patrón permitiría tener fórmulas de daño intercambiables sin tocar el código existente?
+Creo que el puede ser el patron Strategy, permite intercambiar algoritmos sin que el cliente se entere, he aplicado una mezla de Factory y Strategy
 
 **Pista:** Cada tipo de ataque (NORMAL, SPECIAL, STATUS) tiene una fórmula distinta.
 
