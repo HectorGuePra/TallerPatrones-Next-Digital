@@ -26,15 +26,24 @@ public class BattleService {
     public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
 
     public BattleStartResult startBattle(String playerName, String enemyName) {
-        Character player = new Character(
-                playerName != null ? playerName : "Héroe",
-                150, 25, 15, 20
-        );
+        // Usando el patrón Builder: código más legible y mantenible
+        Character player = new Character.Builder(playerName != null ? playerName : "Héroe")
+                .maxHp(150)
+                .attack(25)
+                .defense(15)
+                .speed(20)
+                .characterClass("WARRIOR")
+                .equipment("Espada Básica")
+                .build();
 
-        Character enemy = new Character(
-                enemyName != null ? enemyName : "Dragón",
-                120, 30, 10, 15
-        );
+        Character enemy = new Character.Builder(enemyName != null ? enemyName : "Dragón")
+                .maxHp(120)
+                .attack(30)
+                .defense(10)
+                .speed(15)
+                .characterClass("MONSTER")
+                .equipment("Garras Afiladas")
+                .build();
 
         Battle battle = new Battle(player, enemy);
         String battleId = UUID.randomUUID().toString();
@@ -82,8 +91,23 @@ public class BattleService {
 
     public BattleStartResult startBattleFromExternal(String fighter1Name, int fighter1Hp, int fighter1Atk,
                                                      String fighter2Name, int fighter2Hp, int fighter2Atk) {
-        Character player = new Character(fighter1Name, fighter1Hp, fighter1Atk, 10, 10);
-        Character enemy = new Character(fighter2Name, fighter2Hp, fighter2Atk, 10, 10);
+        // Builder hace más clara la conversión de datos externos a nuestro dominio
+        Character player = new Character.Builder(fighter1Name)
+                .maxHp(fighter1Hp)
+                .attack(fighter1Atk)
+                .defense(10)
+                .speed(10)
+                .characterClass("EXTERNAL")
+                .build();
+
+        Character enemy = new Character.Builder(fighter2Name)
+                .maxHp(fighter2Hp)
+                .attack(fighter2Atk)
+                .defense(10)
+                .speed(10)
+                .characterClass("EXTERNAL")
+                .build();
+
         Battle battle = new Battle(player, enemy);
         String battleId = UUID.randomUUID().toString();
         battleRepository.save(battleId, battle);

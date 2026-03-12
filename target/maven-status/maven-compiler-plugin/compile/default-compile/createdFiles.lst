@@ -22,5 +22,6 @@ com\taller\patrones\CombatSimulatorApplication.class
 com\taller\patrones\domain\Attack.class
 com\taller\patrones\infrastructure\combat\PoisonStingFactory.class
 com\taller\patrones\domain\Battle.class
+com\taller\patrones\domain\Character$Builder.class
 com\taller\patrones\infrastructure\combat\CriticalDamageStrategy.class
 com\taller\patrones\infrastructure\combat\FireballFactory.class
