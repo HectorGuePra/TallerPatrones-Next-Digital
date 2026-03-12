@@ -20,6 +20,12 @@ C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\mai
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\CombatSimulatorApplication.java
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\combat\PoisonStingFactory.java
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\persistence\BattleRepository.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\Provider2BattleAdapter.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\Provider2BattleData.java
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\combat\TackleFactory.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\ExternalBattleDataAdapter.java
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\combat\SpecialAttack.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\Provider1BattleAdapter.java
 C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\combat\ThunderFactory.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\Provider1BattleData.java
+C:\Users\hecto\Desktop\TallerNEXTDigital\dragon-quest-patrones-de-dise-o\src\main\java\com\taller\patrones\infrastructure\adapter\MapBasedBattleAdapter.java

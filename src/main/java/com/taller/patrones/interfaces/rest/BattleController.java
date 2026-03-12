@@ -3,10 +3,10 @@ package com.taller.patrones.interfaces.rest;
 import com.taller.patrones.application.BattleService;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.infrastructure.adapter.MapBasedBattleAdapter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,23 +41,22 @@ public class BattleController {
     }
 
     /**
-     * Endpoint alternativo: recibe datos de combate en formato "externo".
-     * Los campos vienen con nombres distintos (fighter1_hp, fighter1_atk...).
-     * La conversión se hace aquí, manualmente, en el controller.
+     * Endpoint refactorizado: recibe datos de combate en formato "externo".
+     * Usa el patrón Adapter para convertir el formato externo a nuestro dominio.
+     *
+     * Soporta múltiples formatos:
+     * - Provider 1: fighter1_name, fighter1_hp, fighter1_atk, fighter2_name, fighter2_hp, fighter2_atk
+     * - Provider 2: {player: {name, health, attack}, enemy: {name, health, attack}}
+     *
+     * El adapter detecta automáticamente el formato y hace la conversión.
      */
     @PostMapping("/start/external")
     public ResponseEntity<Map<String, Object>> startBattleFromExternal(@RequestBody Map<String, Object> body) {
-        String fighter1Name = (String) body.getOrDefault("fighter1_name", "Héroe");
-        int fighter1Hp = ((Number) body.getOrDefault("fighter1_hp", 150)).intValue();
-        int fighter1Atk = ((Number) body.getOrDefault("fighter1_atk", 25)).intValue();
-        String fighter2Name = (String) body.getOrDefault("fighter2_name", "Dragón");
-        int fighter2Hp = ((Number) body.getOrDefault("fighter2_hp", 120)).intValue();
-        int fighter2Atk = ((Number) body.getOrDefault("fighter2_atk", 30)).intValue();
+        // Patrón Adapter: delega la conversión al adapter
+        // El controller no necesita saber los detalles del formato externo
+        MapBasedBattleAdapter adapter = new MapBasedBattleAdapter(body);
 
-        var result = battleService.startBattleFromExternal(
-                fighter1Name, fighter1Hp, fighter1Atk,
-                fighter2Name, fighter2Hp, fighter2Atk
-        );
+        var result = battleService.startBattleFromAdapter(adapter);
         Battle battle = result.battle();
 
         return ResponseEntity.ok(Map.of(

@@ -3,6 +3,7 @@ package com.taller.patrones.application;
 import com.taller.patrones.domain.Attack;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
+import com.taller.patrones.infrastructure.adapter.ExternalBattleDataAdapter;
 import com.taller.patrones.infrastructure.combat.AttackFactory;
 import com.taller.patrones.infrastructure.combat.AttackFactoryProvider;
 import com.taller.patrones.infrastructure.combat.CombatEngine;
@@ -111,6 +112,31 @@ public class BattleService {
         Battle battle = new Battle(player, enemy);
         String battleId = UUID.randomUUID().toString();
         battleRepository.save(battleId, battle);
+        return new BattleStartResult(battleId, battle);
+    }
+
+    /**
+     * Inicia una batalla desde datos externos usando el patrón Adapter.
+     * El adapter se encarga de convertir el formato externo a nuestro dominio.
+     *
+     * @param adapter Adapter que convierte datos externos a Character
+     * @return Resultado con battleId y Battle
+     */
+    public BattleStartResult startBattleFromAdapter(ExternalBattleDataAdapter adapter) {
+        if (adapter == null) {
+            throw new IllegalArgumentException("Adapter no puede ser null");
+        }
+
+        // El adapter se encarga de toda la conversión - código limpio y desacoplado
+        Character player = adapter.getPlayer();
+        Character enemy = adapter.getEnemy();
+
+        Battle battle = new Battle(player, enemy);
+        battle.log("Batalla iniciada desde " + adapter.getProviderName());
+
+        String battleId = UUID.randomUUID().toString();
+        battleRepository.save(battleId, battle);
+
         return new BattleStartResult(battleId, battle);
     }
 
