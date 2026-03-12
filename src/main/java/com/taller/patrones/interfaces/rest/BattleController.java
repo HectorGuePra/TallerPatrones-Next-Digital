@@ -14,6 +14,8 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class BattleController {
 
+    // Todos los controladores comparten el mismo servicio
+    // que a su vez usa el Singleton de BattleRepository
     private final BattleService battleService = new BattleService();
 
     @PostMapping("/start")

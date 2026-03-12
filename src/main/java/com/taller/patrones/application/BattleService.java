@@ -14,13 +14,13 @@ import java.util.UUID;
 /**
  * Caso de uso: gestionar batallas.
  * <p>
- * Nota: Crea sus propias dependencias con new. Cada vez que necesitamos
- * un CombatEngine o BattleRepository, hacemos new aquí.
+ * Usa el patrón Singleton para acceder al repositorio compartido.
  */
 public class BattleService {
 
     private final CombatEngine combatEngine = new CombatEngine();
-    private final BattleRepository battleRepository = new BattleRepository();
+    // Usa la instancia única del repositorio (patrón Singleton)
+    private final BattleRepository battleRepository = BattleRepository.getInstance();
 
     public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER","METEORO");
     public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
