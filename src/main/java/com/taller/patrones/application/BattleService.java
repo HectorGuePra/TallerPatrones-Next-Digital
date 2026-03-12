@@ -7,8 +7,10 @@ import com.taller.patrones.infrastructure.adapter.ExternalBattleDataAdapter;
 import com.taller.patrones.infrastructure.combat.AttackFactory;
 import com.taller.patrones.infrastructure.combat.AttackFactoryProvider;
 import com.taller.patrones.infrastructure.combat.CombatEngine;
+import com.taller.patrones.infrastructure.observer.DamageObserver;
 import com.taller.patrones.infrastructure.persistence.BattleRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,8 +25,36 @@ public class BattleService {
     // Usa la instancia única del repositorio (patrón Singleton)
     private final BattleRepository battleRepository = BattleRepository.getInstance();
 
+    // Patrón Observer: lista de observadores de eventos de daño
+    private final List<DamageObserver> damageObservers = new ArrayList<>();
+
     public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER","METEORO");
     public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
+
+    /**
+     * Registra un observador de eventos de daño.
+     */
+    public void addDamageObserver(DamageObserver observer) {
+        if (observer != null && !damageObservers.contains(observer)) {
+            damageObservers.add(observer);
+        }
+    }
+
+    /**
+     * Elimina un observador de eventos de daño.
+     */
+    public void removeDamageObserver(DamageObserver observer) {
+        damageObservers.remove(observer);
+    }
+
+    /**
+     * Notifica a todos los observadores cuando ocurre daño.
+     */
+    private void notifyDamageObservers(Character attacker, Character defender, Attack attack, int damage) {
+        for (DamageObserver observer : damageObservers) {
+            observer.onDamageDealt(attacker, defender, attack, damage);
+        }
+    }
 
     public BattleStartResult startBattle(String playerName, String enemyName) {
         // Usando el patrón Builder: código más legible y mantenible
@@ -84,6 +114,10 @@ public class BattleService {
         String target = defender == battle.getPlayer() ? "player" : "enemy";
         battle.setLastDamage(damage, target);
         battle.log(attacker.getName() + " usa " + attack.getName() + " y hace " + damage + " de daño a " + defender.getName());
+
+        // Patrón Observer: notificar a todos los observadores
+        notifyDamageObservers(attacker, defender, attack, damage);
+
         battle.switchTurn();
         if (!defender.isAlive()) {
             battle.finish(attacker.getName());

@@ -4,6 +4,9 @@ import com.taller.patrones.application.BattleService;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
 import com.taller.patrones.infrastructure.adapter.MapBasedBattleAdapter;
+import com.taller.patrones.infrastructure.observer.AnalyticsObserver;
+import com.taller.patrones.infrastructure.observer.AuditLogObserver;
+import com.taller.patrones.infrastructure.observer.StatsObserver;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,13 @@ public class BattleController {
     // Todos los controladores comparten el mismo servicio
     // que a su vez usa el Singleton de BattleRepository
     private final BattleService battleService = new BattleService();
+
+    public BattleController() {
+        // Patrón Observer: registrar observadores al inicializar
+        battleService.addDamageObserver(new AnalyticsObserver());
+        battleService.addDamageObserver(new AuditLogObserver());
+        battleService.addDamageObserver(new StatsObserver());
+    }
 
     @PostMapping("/start")
     public ResponseEntity<Map<String, Object>> startBattle(@RequestBody(required = false) Map<String, String> body) {

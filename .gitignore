@@ -14,5 +14,7 @@ Thumbs.db
 *.log
 temp/
 
-# Ignorar archivos de IDEs
+# Ignorar archivos de IDE
 .idea/
+
+target/

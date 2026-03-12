@@ -17,7 +17,7 @@ public class BattleRepository {
     // Instancia única del Singleton
     private static volatile BattleRepository instance;
 
-    // Almacenamiento thread-safe de batallas
+    // Almacenamiento thread-safe de batallas, no es estatico
     private final Map<String, Battle> battles = new ConcurrentHashMap<>();
 
     /**
