@@ -10,6 +10,7 @@ import com.taller.patrones.infrastructure.observer.StatsObserver;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -104,6 +105,17 @@ public class BattleController {
         }
 
         return ResponseEntity.ok(toBattleDto(battleService.getBattle(battleId)));
+    }
+
+    @PostMapping("/{battleId}/undo")
+    public ResponseEntity<Map<String, Object>> undoLastAttack(@PathVariable String battleId) {
+        Battle battle = battleService.getBattle(battleId);
+        if (battle == null) return ResponseEntity.notFound().build();
+
+        boolean undone = battleService.undoLastAttack(battleId);
+        Map<String, Object> response = new HashMap<>(toBattleDto(battleService.getBattle(battleId)));
+        response.put("undone", undone);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{battleId}/enemy-turn")

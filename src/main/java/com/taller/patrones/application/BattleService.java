@@ -1,5 +1,7 @@
 package com.taller.patrones.application;
 
+import com.taller.patrones.application.command.AttackCommand;
+import com.taller.patrones.application.command.BattleCommand;
 import com.taller.patrones.domain.Attack;
 import com.taller.patrones.domain.Battle;
 import com.taller.patrones.domain.Character;
@@ -10,9 +12,13 @@ import com.taller.patrones.infrastructure.combat.CombatEngine;
 import com.taller.patrones.infrastructure.observer.DamageObserver;
 import com.taller.patrones.infrastructure.persistence.BattleRepository;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Caso de uso: gestionar batallas.
@@ -25,10 +31,13 @@ public class BattleService {
     // Usa la instancia única del repositorio (patrón Singleton)
     private final BattleRepository battleRepository = BattleRepository.getInstance();
 
+    // Historial de comandos para soportar undo por batalla
+    private final Map<String, Deque<BattleCommand>> commandHistory = new ConcurrentHashMap<>();
+
     // Patrón Observer: lista de observadores de eventos de daño
     private final List<DamageObserver> damageObservers = new ArrayList<>();
 
-    public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER","METEORO");
+    public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER", "METEORO");
     public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
 
     /**
@@ -79,6 +88,7 @@ public class BattleService {
         Battle battle = new Battle(player, enemy);
         String battleId = UUID.randomUUID().toString();
         battleRepository.save(battleId, battle);
+        commandHistory.put(battleId, new ArrayDeque<>());
 
         return new BattleStartResult(battleId, battle);
     }
@@ -91,37 +101,48 @@ public class BattleService {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || !battle.isPlayerTurn()) return;
 
-        AttackFactory factory= AttackFactoryProvider.getFactory(attackName);
+        AttackFactory factory = AttackFactoryProvider.getFactory(attackName);
         Attack attack = combatEngine.createAttack(factory);
-
         int damage = combatEngine.calculateDamage(battle.getPlayer(), battle.getEnemy(), attack);
-        applyDamage(battle, battle.getPlayer(), battle.getEnemy(), damage, attack);
+
+        executeAndStoreCommand(battleId, battle, battle.getPlayer(), battle.getEnemy(), attack, damage);
     }
 
     public void executeEnemyAttack(String battleId, String attackName) {
         Battle battle = battleRepository.findById(battleId);
         if (battle == null || battle.isFinished() || battle.isPlayerTurn()) return;
 
-        AttackFactory factory= AttackFactoryProvider.getFactory(attackName != null ? attackName : "GOLPE");
+        AttackFactory factory = AttackFactoryProvider.getFactory(attackName != null ? attackName : "GOLPE");
         Attack attack = combatEngine.createAttack(factory);
-
         int damage = combatEngine.calculateDamage(battle.getEnemy(), battle.getPlayer(), attack);
-        applyDamage(battle, battle.getEnemy(), battle.getPlayer(), damage, attack);
+
+        executeAndStoreCommand(battleId, battle, battle.getEnemy(), battle.getPlayer(), attack, damage);
     }
 
-    private void applyDamage(Battle battle, Character attacker, Character defender, int damage, Attack attack) {
-        defender.takeDamage(damage);
-        String target = defender == battle.getPlayer() ? "player" : "enemy";
-        battle.setLastDamage(damage, target);
-        battle.log(attacker.getName() + " usa " + attack.getName() + " y hace " + damage + " de daño a " + defender.getName());
+    private void executeAndStoreCommand(String battleId, Battle battle, Character attacker, Character defender, Attack attack, int damage) {
+        BattleCommand command = new AttackCommand(battle, attacker, defender, attack, damage);
+        command.execute();
+
+        commandHistory.computeIfAbsent(battleId, key -> new ArrayDeque<>()).push(command);
 
         // Patrón Observer: notificar a todos los observadores
         notifyDamageObservers(attacker, defender, attack, damage);
+    }
 
-        battle.switchTurn();
-        if (!defender.isAlive()) {
-            battle.finish(attacker.getName());
+    public boolean undoLastAttack(String battleId) {
+        Battle battle = battleRepository.findById(battleId);
+        if (battle == null) {
+            return false;
         }
+
+        Deque<BattleCommand> history = commandHistory.get(battleId);
+        if (history == null || history.isEmpty()) {
+            return false;
+        }
+
+        BattleCommand command = history.pop();
+        command.undo();
+        return true;
     }
 
     public BattleStartResult startBattleFromExternal(String fighter1Name, int fighter1Hp, int fighter1Atk,
@@ -146,6 +167,7 @@ public class BattleService {
         Battle battle = new Battle(player, enemy);
         String battleId = UUID.randomUUID().toString();
         battleRepository.save(battleId, battle);
+        commandHistory.put(battleId, new ArrayDeque<>());
         return new BattleStartResult(battleId, battle);
     }
 
@@ -170,6 +192,7 @@ public class BattleService {
 
         String battleId = UUID.randomUUID().toString();
         battleRepository.save(battleId, battle);
+        commandHistory.put(battleId, new ArrayDeque<>());
 
         return new BattleStartResult(battleId, battle);
     }
