@@ -37,7 +37,7 @@ public class BattleService {
     // Patrón Observer: lista de observadores de eventos de daño
     private final List<DamageObserver> damageObservers = new ArrayList<>();
 
-    public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER", "METEORO");
+    public static final List<String> PLAYER_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL", "ICE_BEAM", "POISON_STING", "THUNDER", "METEORO", "COMBO_TRIPLE");
     public static final List<String> ENEMY_ATTACKS = List.of("TACKLE", "SLASH", "FIREBALL");
 
     /**
